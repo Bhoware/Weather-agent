@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException
 from pydantic import BaseModel
 from src.build import agent
 
@@ -10,8 +10,12 @@ class Input(BaseModel):
 
 @app.post("/chat")
 def weather_agent(input: Input):
-    agent_executor = agent()
-    return {"output": agent_executor.invoke({"input": f"Weather in {input.city}"})["output"]}
+    try:
+        agent_executor = agent()
+        return {"output": agent_executor.invoke({"input": f"Weather in {input.city}"})["output"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
 
     
